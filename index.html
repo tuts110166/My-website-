@@ -1,0 +1,170 @@
+html
+‎<!DOCTYPE html>
+‎<html lang="en">
+‎<head>
+‎  <meta charset="UTF-8">
+‎  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+‎  <title>Login System V5</title>
+‎  <style>
+‎    body {
+‎      font-family: Arial, sans-serif;
+‎      background: #f4f4f4;
+‎      display: flex;
+‎      justify-content: center;
+‎      align-items: center;
+‎      height: 100vh;
+‎    }
+‎    .container {
+‎      background: white;
+‎      padding: 20px;
+‎      border-radius: 10px;
+‎      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+‎      width: 300px;
+‎      text-align: center;
+‎    }
+‎    input {
+‎      display: block;
+‎      width: 90%;
+‎      margin: 10px auto;
+‎      padding: 8px;
+‎      border: 1px solid #ccc;
+‎      border-radius: 5px;
+‎    }
+‎    button {
+‎      margin: 5px;
+‎      padding: 10px;
+‎      width: 100%;
+‎      border: none;
+‎      border-radius: 5px;
+‎      background: #007bff;
+‎      color: white;
+‎      cursor: pointer;
+‎    }
+‎    button:hover {
+‎      background: #0056b3;
+‎    }
+‎    #dashboard {
+‎      display: none;
+‎    }
+‎  </style>
+‎</head>
+‎<body>
+‎  <div class="container">
+‎
+‎    <!-- Sign Up Form -->
+‎    <div id="signupForm">
+‎      <h2>Sign Up</h2>
+‎      <input id="signupUser" placeholder="Enter Username">
+‎      <input id="signupPass" type="password" placeholder="Enter Password">
+‎      <button onclick="signup()">Sign Up</button>
+‎      <p><a href="#" onclick="toggleForms()">Already have an account? Login here</a></p>
+‎    </div>
+‎
+‎    <!-- Login Form -->
+‎    <div id="loginForm" style="display:none;">
+‎      <h2>Login</h2>
+‎      <input id="loginUser" placeholder="Enter Username">
+‎      <input id="loginPass" type="password" placeholder="Enter Password">
+‎      <button onclick="login()">Login</button>
+‎      <p><a href="#" onclick="toggleForms()">Don’t have an account? Sign up here</a></p>
+‎    </div>
+‎
+‎    <!-- Dashboard -->
+‎    <div id="dashboard">
+‎      <h2 id="welcomeUser"></h2>
+‎      <button onclick="addXP(currentUser, 10)">Gain 10 XP</button>
+‎      <button onclick="logout()">Logout</button>
+‎    </div>
+‎
+‎  </div>
+‎
+‎  <script>
+‎    // "Database" in-memory
+‎    const database = {};
+‎    let currentUser = null;
+‎
+‎    // Simulated server API
+‎    async function apiSignup(user, pass) {
+‎      if (database[user]) return { success: false, message: "User already exists" };
+‎      database[user] = { password: pass, xp: 0 };
+‎      return { success: true };
+‎    }
+‎
+‎    async function apiLogin(user, pass) {
+‎      if (database[user] && database[user].password === pass) {
+‎        return { success: true, xp: database[user].xp };
+‎      }
+‎      return { success: false };
+‎    }
+‎
+‎    async function apiAddXP(user, amount) {
+‎      database[user].xp += amount;
+‎      return database[user].xp;
+‎    }
+‎
+‎    // Sign Up
+‎    async function signup() {
+‎      const user = document.getElementById('signupUser').value;
+‎      const pass = document.getElementById('signupPass').value;
+‎      const res = await apiSignup(user, pass);
+‎      if(res.success) {
+‎        alert('Sign Up successful!');
+‎        toggleForms();
+‎      } else {
+‎        alert('Username already exists.');
+‎      }
+‎    }
+‎
+‎    // Login
+‎    async function login() {
+‎      const user = document.getElementById('loginUser').value;
+‎      const pass = document.getElementById('loginPass').value;
+‎      const res = await apiLogin(user, pass);
+‎      if(res.success) {
+‎        currentUser = user;
+‎        document.getElementById('dashboard').style.display = 'block';
+‎        document.getElementById('loginForm').style.display = 'none';
+‎        document.getElementById('signupForm').style.display = 'none';
+‎        showDashboard(user);
+‎      } else {
+‎        alert('Invalid login');
+‎      }
+‎    }
+‎
+‎    // Add XP
+‎    async function addXP(user, amount) {
+‎      const xp = await apiAddXP(user, amount);
+‎      showDashboard(user);
+‎    }
+‎
+‎    // Show Dashboard
+‎    function showDashboard(user) {
+‎      const xp = database[user].xp;
+‎      const level = Math.floor(xp / 100) + 1;
+‎      document.getElementById('welcomeUser').innerText =
+‎        `Hello, ${user}! Level: ${level}, XP: ${xp}`;
+‎    }
+‎
+‎    // Toggle Forms
+‎    function toggleForms() {
+‎      const signup = document.getElementById('signupForm');
+‎      const login = document.getElementById('loginForm');
+‎      signup.style.display = signup.style.display === 'none' ? 'block' : 'none';
+‎      login.style.display = login.style.display === 'none' ? 'block' : 'none';
+‎    }
+‎
+‎    // Logout
+‎    function logout() {
+‎      currentUser = null;
+‎      document.getElementById('dashboard').style.display = 'none';
+‎      document.getElementById('loginForm').style.display = 'block';
+‎    }
+‎  </script>
+‎</body>
+‎</html>
+‎
+‎
+‎
+‎
+‎
+‎
