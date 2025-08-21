@@ -1,0 +1,61 @@
+// --- Sign Up ---
+‎const signupForm = document.getElementById("signupForm");
+‎if (signupForm) {
+‎  signupForm.addEventListener("submit", function(e) {
+‎    e.preventDefault();
+‎    const username = document.getElementById("username").value.trim();
+‎    const password = document.getElementById("password").value;
+‎
+‎    let users = JSON.parse(localStorage.getItem("users") || "{}");
+‎
+‎    if (users[username]) {
+‎      alert("Username already exists!");
+‎      return;
+‎    }
+‎
+‎    users[username] = { password, xp: 10 };
+‎    localStorage.setItem("users", JSON.stringify(users));
+‎    localStorage.setItem("currentUser", username);
+‎    window.location.href = "dashboard.html";
+‎  });
+‎}
+‎
+‎// --- Login ---
+‎const loginForm = document.getElementById("loginForm");
+‎if (loginForm) {
+‎  loginForm.addEventListener("submit", function(e) {
+‎    e.preventDefault();
+‎    const username = document.getElementById("loginUsername").value.trim();
+‎    const password = document.getElementById("loginPassword").value;
+‎
+‎    let users = JSON.parse(localStorage.getItem("users") || "{}");
+‎
+‎    if (!users[username] || users[username].password !== password) {
+‎      alert("Invalid username or password!");
+‎      return;
+‎    }
+‎
+‎    users[username].xp += 10;
+‎    localStorage.setItem("users", JSON.stringify(users));
+‎    localStorage.setItem("currentUser", username);
+‎    window.location.href = "dashboard.html";
+‎  });
+‎}
+‎
+‎// --- Dashboard ---
+‎const currentUser = localStorage.getItem("currentUser");
+‎if (currentUser && document.getElementById("welcome")) {
+‎  const users = JSON.parse(localStorage.getItem("users") || "{}");
+‎  document.getElementById("welcome").innerText = currentUser;
+‎  document.getElementById("xp").innerText = users[currentUser].xp;
+‎}
+‎
+‎// --- Logout ---
+‎const logoutBtn = document.getElementById("logoutBtn");
+‎if (logoutBtn) {
+‎  logoutBtn.addEventListener("click", () => {
+‎    localStorage.removeItem("currentUser");
+‎    window.location.href = "login.html";
+‎  });
+‎}
+‎
